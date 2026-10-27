@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/palette.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../../core/widgets/gradient_panel.dart';
+import '../../../auth/presentation/widgets/login_bottom_sheet.dart';
+// Agar LoginBottomSheet kisi aur file mein hai toh usko yahan import kar lena:
+// import '../auth/presentation/widgets/login_bottom_sheet.dart';
 
 class PlansPage extends StatelessWidget {
   const PlansPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final palette = Get.find<ThemeController>().palette;
@@ -15,6 +20,7 @@ class PlansPage extends StatelessWidget {
       ('20 GB', '30 days', '\$16.90', 'Best for longer adventures'),
       ('Unlimited', '30 days', '\$29.90', 'Go all-in on connectivity'),
     ];
+
     return Scaffold(
         appBar: AppBar(
             title: Text(destination == null
@@ -41,20 +47,27 @@ class PlansPage extends StatelessWidget {
                 child: i == 2
                     ? GradientPanel(
                         palette: palette,
-                        child: _PlanContent(plan: p, featured: true))
+                        child: _PlanContent(plan: p, featured: true, palette: palette))
                     : Card(
                         child: Padding(
                             padding: const EdgeInsets.all(18),
-                            child: _PlanContent(plan: p, featured: false))));
+                            child: _PlanContent(plan: p, featured: false, palette: palette))));
           }),
         ]));
   }
 }
 
 class _PlanContent extends StatelessWidget {
-  const _PlanContent({required this.plan, required this.featured});
+  const _PlanContent({
+    required this.plan,
+    required this.featured,
+    required this.palette,
+  });
+
   final (String, String, String, String) plan;
   final bool featured;
+  final AppPalette palette;
+
   @override
   Widget build(BuildContext context) {
     final fg =
@@ -84,13 +97,33 @@ class _PlanContent extends StatelessWidget {
           width: double.infinity,
           child: featured
               ? FilledButton.tonal(
-                  onPressed: () => Get.snackbar('Plan selected',
-                      'Connect checkout and payment APIs to purchase this plan.'),
+                  onPressed: () {
+                    // Yahan humne helper function call kar diya hai
+                    triggerLoginBottomSheet(context, palette);
+                  },
                   child: const Text('Choose plan'))
               : OutlinedButton(
-                  onPressed: () => Get.snackbar('Plan selected',
-                      'Connect checkout and payment APIs to purchase this plan.'),
+                  onPressed: () {
+                    // Yahan bhi helper function call kar diya hai
+                    triggerLoginBottomSheet(context, palette);
+                  },
                   child: const Text('Choose plan'))),
     ]);
   }
+}
+
+/// Yeh raha wo helper function jisko aap kahin bhi rakh sakte hain.
+/// Isko aapne is hi file ke bilkul akhir (bottom) mein paste kar dena hai.
+void triggerLoginBottomSheet(BuildContext context, AppPalette currentPalette) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent, // Background transparent rakhein taake border radius clean dikhe
+    builder: (context) => Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom, // Keyboard open hone par overflow se bachne ke liye
+      ),
+      child: LoginBottomSheet(palette: currentPalette),
+    ),
+  );
 }
