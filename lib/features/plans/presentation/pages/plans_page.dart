@@ -99,13 +99,13 @@ class _PlanContent extends StatelessWidget {
               ? FilledButton.tonal(
                   onPressed: () {
                     // Yahan humne helper function call kar diya hai
-                    triggerLoginBottomSheet(context, palette);
+                    triggerLoginScreen(context, palette);
                   },
                   child: const Text('Choose plan'))
               : OutlinedButton(
                   onPressed: () {
                     // Yahan bhi helper function call kar diya hai
-                    triggerLoginBottomSheet(context, palette);
+                    triggerLoginScreen(context, palette);
                   },
                   child: const Text('Choose plan'))),
     ]);
@@ -114,16 +114,6 @@ class _PlanContent extends StatelessWidget {
 
 /// Yeh raha wo helper function jisko aap kahin bhi rakh sakte hain.
 /// Isko aapne is hi file ke bilkul akhir (bottom) mein paste kar dena hai.
-void triggerLoginBottomSheet(BuildContext context, AppPalette currentPalette) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent, // Background transparent rakhein taake border radius clean dikhe
-    builder: (context) => Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom, // Keyboard open hone par overflow se bachne ke liye
-      ),
-      child: LoginBottomSheet(palette: currentPalette),
-    ),
-  );
+void triggerLoginScreen(BuildContext context, AppPalette currentPalette) {
+  Get.to(() => LoginScreen(palette: currentPalette));
 }
